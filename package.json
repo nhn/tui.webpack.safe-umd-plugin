@@ -1,0 +1,16 @@
+{
+  "name": "safe-umd-webpack-plugin",
+  "version": "0.0.1",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.nhnent.com/fe/safe-umd-webpack-plugin.git"
+  },
+  "author": "FE Development Lab",
+  "license": "MIT",
+  "dependencies": {
+    "webpack-core": "^0.6.9"
+  }
+}
