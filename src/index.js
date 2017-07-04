@@ -2,11 +2,22 @@
 
 var ReplaceSource = require('webpack-core/lib/ReplaceSource');
 
-/* eslint-disable require-jsdoc */
-function SafeUmdRootPlugin() {}
+/**
+ * @constructor
+ */
+function SafeUmdPlugin() {}
 
+/**
+ * Replace 'factory(root[...], root[...], ..)' code of the 
+ * webpackUniversalModuleDefinition function to access nested namespace safely,
+ * and returns the new ReplaceSource instance.
+ * @param {Source} source - source
+ * @param {string} srcText - string content of the source
+ * @returns {ReplaceSource}
+ */
 function genReplacedSource(source, srcText) {
-    var matchResult = /factory\(root.+\)/.exec(srcText);
+    var factoryCallWithRootAccessors = /factory\((?:root(?:\[[^\]]+\],?\s?)+)+\)/;
+    var matchResult = factoryCallWithRootAccessors.exec(srcText);
     var mText = matchResult[0];
     var mIndex = matchResult.index;
     var newSource = new ReplaceSource(source);
@@ -17,6 +28,14 @@ function genReplacedSource(source, srcText) {
     return newSource;
 }
 
+/**
+ * Take a code string which looks like 
+ * (factory(root["a"], root["a"]["b"]["c"]) 
+ * and replace multi-nested root accessor with safely accessing code like 
+ * (factory(root["a"], (root["a"] && root["a"]["b"] && root["a"]["b"]["c"]))
+ * @param {string} factoryCall - a code string
+ * @returns {string}
+ */
 function replaceFactoryCall(factoryCall) {
     var multiNestedRootAccessor = /root(?:\[[^\]]+\]){2,}/g;
 
@@ -29,21 +48,26 @@ function replaceFactoryCall(factoryCall) {
         for (; i < len; i += 1) {
             accessUnits.push('root[' + units.slice(0, i + 1).join('][') + ']');
         }
+
         return '(' + accessUnits.join(' && ') + ')';
     });
 }
 
-SafeUmdRootPlugin.prototype.apply = function(compiler) {
+SafeUmdPlugin.prototype.apply = function(compiler) {
     compiler.plugin('compilation', function(compilation) {
         compilation.templatesPlugin('render-with-entry', function(source) {
             var srcText = source.source();
 
+            // As this function is called more the once and 
+            // can be called before the UMDMainTemplatePlugin, 
+            // we should check if there's UMD function in the source
             if (srcText.indexOf('webpackUniversalModuleDefinition') < 0) {
                 return source;
             }
+
             return genReplacedSource(source, srcText);
         });
     });
 };
 
-module.exports = SafeUmdRootPlugin;
+module.exports = SafeUmdPlugin;
