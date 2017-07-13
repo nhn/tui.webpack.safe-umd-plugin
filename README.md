@@ -1,8 +1,8 @@
 # safe-umd-webpack-plugin
 
-Webpack plugin to handle optional dependencies safely when using 'libraryTarget: umd'.
+Webpack plugin to handle optional dependencies safely when using `libraryTarget: umd`.
 
-## Usecase
+## When to use
 
 When using `umd` as a libraryTarget with config like :
 
@@ -31,27 +31,28 @@ You can't use optional dependencies for a root (namespace) because of the genera
 root["my"] = root["my"] || {}, root["my"]["module"] = factory(root["my"]["ext"]["module"]);
 ```
 
-This plugin replace this code to safely access the namespace with code like :
+This plugin replace code above to safely access the namespace with code like :
 
 ```js
 root["my"] = root["my"] || {}, root["my"]["module"] = factory(root["my"] && root["my"]["ext"] && root["my"]["ext"]["module"]);
 ```
 
-## Install
+## How to use
+
+### Install
 
 ```
 npm install safe-umd-webpack-plugin --save-dev
 ```
 
-## Config
-
-`webpack.config.js`
+### Config
 
 ```js
+// webpack.config.js
+
 var SafeUmdPlugin = require('safe-umd-webpack-plugin');
 
 // ...
-
 module.exports = {
   // ...
   plugins: [
