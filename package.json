@@ -1,14 +1,14 @@
 {
   "name": "safe-umd-webpack-plugin",
   "version": "0.0.1",
-  "description": "",
+  "description": "Webpack plugin to handle optional dependency safely when using libraryTarget: umd",
   "main": "lib/index.js",
   "scripts": {
     "test": "jasmine ./test/spec.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.nhnent.com/fe/safe-umd-webpack-plugin.git"
+    "url": "https://github.com/nhnent/tui.webpack.safe-umd-plugin.git"
   },
   "author": "FE Development Lab",
   "license": "MIT",
